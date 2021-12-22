@@ -6,6 +6,7 @@ import THEME from '../../config/theme';
 import LinearGradient from 'react-native-linear-gradient';
 
 import {CommonActions} from '@react-navigation/native';
+import ChatShimmer from '../chat/ChatShimmer';
 
 import moment from 'moment';
 
@@ -50,7 +51,7 @@ export default class Chats extends React.Component {
 
     this.didFocusSubscription = this.props.navigation.addListener(
       'focus',
-      (payload) => {
+      payload => {
         let {route} = this.props;
         if (route.params && route.params.from === 'ref') {
           this._getChats();
@@ -60,7 +61,7 @@ export default class Chats extends React.Component {
     );
     this.didBlurSubscription = this.props.navigation.addListener(
       'blur',
-      (payload) => {
+      payload => {
         this.props.navigation.dispatch(CommonActions.setParams({from: ''}));
       },
     );
@@ -84,7 +85,7 @@ export default class Chats extends React.Component {
       .limitToLast(15);
     this.consListerner.on(
       'value',
-      async (conSnap) => {
+      async conSnap => {
         let chats = [];
         // console.log(conSnap);
         // console.log('snap!', conSnap.val());
@@ -100,13 +101,13 @@ export default class Chats extends React.Component {
           let chatSnap = await database()
             .ref(`conversation/${con}`)
             .once('value')
-            .catch((err) =>
+            .catch(err =>
               console.log('chats.js _getChats chat conGeterr: ', err),
             );
 
           if (!chatSnap.exists()) {
             let chts = this.state.chats;
-            chts.filter((c) => c.refKey !== con);
+            chts.filter(c => c.refKey !== con);
             this.setState({chats: chts});
             continue;
           }
@@ -126,7 +127,7 @@ export default class Chats extends React.Component {
           let cUserSnap = await database()
             .ref(`Users/${ouid}`)
             .once('value')
-            .catch((err) => console.log('chats.js _getChats cUser err: ', err));
+            .catch(err => console.log('chats.js _getChats cUser err: ', err));
           if (
             !cUserSnap.exists ||
             cUserSnap.val() === null ||
@@ -157,7 +158,7 @@ export default class Chats extends React.Component {
         // console.log('chats: ', chats.length);
         this._isMounted && this.setState({chats, loading: false});
       },
-      (err) => {
+      err => {
         console.log('chats.js _getChats err: ', err);
         this._isMounted && this.setState({loading: false});
       },
@@ -185,13 +186,16 @@ export default class Chats extends React.Component {
     return (
       <View style={styles.container}>
         <Header title={'Messages'} type {...this.props} />
-        <FlatList
-          data={chats}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderChat}
-          style={{flex: 1}}
-        />
-        {loading ? <Loader isVisible={loading} /> : null}
+        {loading ? (
+          <ChatShimmer chat={true} />
+        ) : (
+          <FlatList
+            data={chats}
+            keyExtractor={this._keyExtractor}
+            renderItem={this._renderChat}
+            style={{flex: 1}}
+          />
+        )}
       </View>
     );
   }
@@ -217,7 +221,8 @@ function RenderChat(props) {
           },
           fromPage: '',
         });
-      }}>
+      }}
+    >
       <View style={styles.chatConIn}>
         <View style={styles.propicCon}>
           <Image source={{uri: cUser.dp}} style={styles.propic} />
@@ -225,7 +230,8 @@ function RenderChat(props) {
         <View style={styles.chatContent}>
           <View style={styles.chatContentTop}>
             <Text
-              style={{...styles.name, fontWeight: unRead ? 'bold' : 'normal'}}>
+              style={{...styles.name, fontWeight: unRead ? 'bold' : 'normal'}}
+            >
               {cUser.sn}
             </Text>
             {/*<View style={styles.tScore}>*/}
@@ -246,7 +252,8 @@ function RenderChat(props) {
         <Text
           style={{...styles.lMsg, fontWeight: unRead ? 'bold' : 'normal'}}
           numberOfLines={1}
-          ellipsizeMode={'tail'}>
+          ellipsizeMode={'tail'}
+        >
           {lm.sid === user.uid ? 'You: ' : `${cUser.sn.split(' ')[0]}:`} {lm.mg}
         </Text>
         {chat[user.uid] && chat[user.uid].uc ? (

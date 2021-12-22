@@ -372,7 +372,7 @@ const style = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     bottom: 20,
-    // height: 20,
+    height: 20,
     width: '50%',
     alignSelf: 'center',
     flexDirection: 'row',

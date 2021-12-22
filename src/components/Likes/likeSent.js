@@ -18,7 +18,7 @@ import moment from 'moment';
 import Loader from '../modals/loaders';
 import THEME from "../../config/theme";
 import {STYLE} from "../commonStyle";
-import CardShimmer from '../cards/cardShimmer';
+import ChatShimmer from '../chat/ChatShimmer';
 
 class LikeSent extends React.Component {
   constructor(props) {
@@ -170,7 +170,7 @@ class LikeSent extends React.Component {
 
           {/*{loading && focused ? <Loader isVisible={loading} /> : null}*/}
         {/*</View>*/}
-        {loading && focused ? <CardShimmer /> : this.renderCards()}
+        {loading && focused ? <ChatShimmer /> : this.renderCards()}
        </View>
     );
   }
